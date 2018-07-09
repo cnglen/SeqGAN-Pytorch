@@ -6,9 +6,8 @@ import util
 
 
 class Discriminator(nn.Module):
-    """A CNN for text classification
-architecture: Embedding >> Convolution >> Max-pooling >> Linear
-"""
+    """A CNN for text classification architecture: Embedding >> Convolution >> Max-pooling >> Linear
+    """
 
     def __init__(self, sequence_length, vocab_size, embedding_size, filter_sizes, num_filters, dropout):
         super(Discriminator, self).__init__()
@@ -24,17 +23,21 @@ architecture: Embedding >> Convolution >> Max-pooling >> Linear
         # 	self.convs.append(conv)
         # 	self.pools.append(pool)
         self.relu = nn.ReLU(inplace=True)
-        self.highway = nn.Linear(
-            int(np.sum(num_filters)), int(np.sum(num_filters)))
+        self.highway = nn.Linear(int(np.sum(num_filters)), int(np.sum(num_filters)))
         self.dropout = nn.Dropout(p=dropout)
         self.linear = nn.Linear(np.sum(num_filters), 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        # x: [N, sequence_length]
+        """
+        Input:
+          x: [batch_size, sequence_length]
+
+        Output:
+          logits: [batch_size, 1]
+        """
         embedding = self.embedding(x)  # (N, sequence_length, embedding_size)
-        # (N, 1, sequence_length, embedding_size)
-        embedding = embedding.unsqueeze(1)
+        embedding = embedding.unsqueeze(1)  # (N, 1, sequence_length, embedding_size)
         outs = []
 
         for conv, pool in zip(self.convs, self.pools):
@@ -50,6 +53,7 @@ architecture: Embedding >> Convolution >> Max-pooling >> Linear
         t = self.sigmoid(highway)
         highway_out = t * g + (1 - t) * f
         highway_out_drop = self.dropout(highway_out)
+
         logits = self.linear(highway_out)
 
         return logits  # (N, 1)

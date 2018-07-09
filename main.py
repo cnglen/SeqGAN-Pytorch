@@ -1,30 +1,22 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import argparse
 from solver import Solver
 import torch
 
-parser = argparse.ArgumentParser(
-    description='SeqGAN in pytorch', epilog='#' * 75)
-parser.add_argument('--gpus', default='', type=str,
-                    help='gpu to use: 0, 1, 2, 3, 4 or 0,1,2. Default: cpu')
-parser.add_argument('--lr', default=0.1, type=float,
-                    help='learning rate. Default: 0.1')
-parser.add_argument('--batch', default=64, type=int,
-                    help='batch size. Default: 64')
-parser.add_argument('--vocab', default=1000, type=int,
-                    help='vocabulary size. Default: 1000')
-parser.add_argument('--pre_gen_epoch', default=200, type=int,
-                    help='num of pre-epochs. Default: 200')
-parser.add_argument('--pre_dis_epoch', default=5, type=int,
-                    help='num of pre-epochs. Default: 5')
-parser.add_argument('--gan_epoch', default=100, type=int,
-                    help='num of gan-epochs. Default: 100')
-parser.add_argument('--generate_num', default=10000, type=int,
-                    help='num of generated samples. Default: 10000')
-parser.add_argument('--sequence_len', default=20, type=int,
-                    help='length of sequence. Default: 20')
-parser.add_argument('--update_rate', default=0.8, type=float,
-                    help='update rate for rollout policy. Default: 0.8')
+parser = argparse.ArgumentParser(description='SeqGAN in pytorch', epilog='#' * 75)
+parser.add_argument('--gpus', default='', type=str, help='gpu to use: 0, 1, 2, 3, 4 or 0,1,2. Default: cpu')
+parser.add_argument('--lr', default=0.1, type=float, help='learning rate. Default: 0.1')
+parser.add_argument('--batch', default=64, type=int, help='batch size. Default: 64')
+parser.add_argument('--vocab', default=1000, type=int, help='vocabulary size. Default: 1000')
+parser.add_argument('--pre_gen_epoch', default=200, type=int, help='num of pre-epochs. Default: 200')
+parser.add_argument('--pre_dis_epoch', default=5, type=int, help='num of pre-epochs. Default: 5')
+parser.add_argument('--gan_epoch', default=100, type=int, help='num of gan-epochs. Default: 100')
+parser.add_argument('--generate_num', default=10000, type=int, help='num of generated samples. Default: 10000')
+parser.add_argument('--sequence_len', default=20, type=int, help='length of sequence. Default: 20')
+parser.add_argument('--update_rate', default=0.8, type=float, help='update rate for rollout policy. Default: 0.8')
 args = parser.parse_args()
 
 
@@ -53,8 +45,8 @@ def main():
 
     backend = 'cpu' if args.gpus == '' else 'gpu'
 
-    solver.pretrain_gen()
-    solver.pretrain_dis()
+    solver.pretrain_gen()       # Pre-train G theta using MLE on sequence Dataset
+    solver.pretrain_dis()       # Pre-train D phi
     solver.train_gan(backend)
 
 

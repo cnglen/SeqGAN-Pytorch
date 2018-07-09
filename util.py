@@ -7,9 +7,11 @@ from torch.utils.data import Dataset
 def to_var(x, volatile=False):
     if torch.cuda.is_available():
         x = x.cuda()
+
     if volatile:
         with torch.no_grad():
-            return Variable(x)
+            result = Variable(x)
+        return result
     else:
         return Variable(x)
 
@@ -21,6 +23,9 @@ def to_cuda(x):
 
 
 def generate_samples(model, batch_size, sequence_len, generate_num, output_file):
+    """
+    Using `model` generate `generate_num, sequence_len`
+    """
     samples = []
     for _ in range(int(generate_num / batch_size)):
         sample = model.sample(batch_size, sequence_len)
